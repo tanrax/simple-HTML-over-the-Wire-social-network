@@ -1,4 +1,4 @@
-Simple HTML social network on Wire using Django and Channels.
+Simple social network using HTML over the Wire architecture in Django with Channels.
 
 ![screenshot](screenshot.png)
 

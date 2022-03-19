@@ -18,7 +18,7 @@ class SocialNetworkConsumer(JsonWebsocketConsumer):
         # Assign the Broadcast group
         async_to_sync(self.channel_layer.group_add)(self.room_name, self.channel_name)
         # Send you all the messages stored in the database.
-        self.send_list_messages()
+        self.send_list_messages(1, False)
 
     def disconnect(self, close_code):
         """Event when client disconnects"""
@@ -47,7 +47,8 @@ class SocialNetworkConsumer(JsonWebsocketConsumer):
                 self.send_list_messages()
             case 'list messages':
                 # Send messages to all clients
-                self.send_list_messages(data['page'])
+                page = int(data['page'])
+                self.send_list_messages(page, page == 1)
             case 'delete message':
                 # Delete message from database
                 Message.objects.get(id=data['id']).delete()
@@ -74,7 +75,7 @@ class SocialNetworkConsumer(JsonWebsocketConsumer):
         self.send_json(data)
 
 
-    def send_list_messages(self, page=1):
+    def send_list_messages(self, page=1, is_broadcast=True):
         """Send list of messages to client"""
         # Filter messages to the current page
         start_pager = self.max_messages_per_page * (page - 1)
@@ -83,25 +84,28 @@ class SocialNetworkConsumer(JsonWebsocketConsumer):
         messages_page = messages[:end_pager]
         # Render HTML and send to client
         total_pages = math.ceil(messages.count() / self.max_messages_per_page)
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_name, {
-                'type': 'send.html', # Run 'send_html()' method
-                'selector': '#messages__list',
-                'html': render_to_string('components/_list-messages.html', {
-                    'messages': messages_page,
-                    'page': page,
-                    'total_pages': total_pages,
-                })
-            }
-        )
+        # Data
+        data = {
+            'type': 'send.html',  # Run 'send_html()' method
+            'selector': '#messages__list',
+            'html': render_to_string('components/_list-messages.html', {
+                'messages': messages_page,
+                'page': page,
+                'total_pages': total_pages,
+            })
+        }
+        # Send to client or group
+        if is_broadcast:
+            data.update({'type': 'send.html'})
+            async_to_sync(self.channel_layer.group_send)(self.room_name, data)
+        else:
+            self.send_json(data)
 
 
     def open_edit_page(self, id):
-        """Send the form to edit the message"""
+        """Send the form to edit the message to uniq client"""
         message = Message.objects.get(id=id)
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_name, {
-                'type': 'send.html', # Run 'send_html()' method
+        self.send_json({
                 'selector': f'#message--{id}',
                 'html': render_to_string('components/_edit-message.html', {'message': message})
             }

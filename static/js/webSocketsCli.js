@@ -41,8 +41,7 @@ export function startEvents(webSocket=window.myWebSocket) {
         const data = JSON.parse(event.data);
         // Renders the HTML received from the Consumer
         const newFragment = document.createRange().createContextualFragment(data.html);
-        document.querySelector(data.selector).innerHTML = "";
-        document.querySelector(data.selector).append(newFragment);
+        document.querySelector(data.selector).replaceChildren(newFragment);
         /* Reassigns the events of the newly rendered HTML */
         listMessages.updateEvents();
         editMessage.updateEvents();

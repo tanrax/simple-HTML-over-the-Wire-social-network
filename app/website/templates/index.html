@@ -6,8 +6,11 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <title>Social Network</title>
+    <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    <script defer src="{% static 'js/index.js' %}"></script>
+    <!-- JavaScript -->
+    <script type="module" src="{% static 'js/webSocketsCli.js' %}"></script>
+    <script type="module" src="{% static 'js/main.js' %}"></script>
 </head>
 <body
         data-host="{{ request.get_host }}"
@@ -43,6 +46,7 @@
                             value="Send"
                     >
                 </form>
+                <script type="module" src="{% static 'js/components/addMessage.js' %}"></script>
             </section>
             <!-- End Form for adding new messages -->
             <!-- Messages -->

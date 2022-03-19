@@ -1,7 +1,9 @@
+{% load static %}
 {% for message in messages %}
     <article class="message" id="message--{{ message.id }}">
         <h2 class="message__author">{{ message.author }}</h2>
-        <p class="message__text">{{ message.text }}</p>
+        <p class="message__text">{{ message.text }}</p
+        >
         <footer class="message__footer">
             <time class="message__created_at">{{ message.created_at }}</time>
             <div class="message__controls">
@@ -11,18 +13,5 @@
         </footer>
     </article>
 {% endfor %}
-{% if total_pages != 0 %}
-    <!-- Paginator -->
-    <div id="paginator" data-page="{{ page }}">
-        {# The back button on the first page is not displayed #}
-        {% if page != 1 %}
-        <button class="button" id="messages__previous-page">Previous</button>
-        {% endif %}
-
-        {# The forward button on the last page is not displayed #}
-        {% if page != total_pages %}
-        <button class="button" id="messages__next-page">Next</button>
-        {% endif %}
-    </div>
-    <!-- End Paginator -->
-{% endif %}
+<div id="paginator" data-page="{{ page }}" data-total-pages="{{ total_pages }}"></div>
+<script  type="module" src="{% static 'js/components/listMessages.js' %}"></script>

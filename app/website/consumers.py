@@ -80,7 +80,7 @@ class SocialNetworkConsumer(JsonWebsocketConsumer):
         start_pager = self.max_messages_per_page * (page - 1)
         end_pager = start_pager + self.max_messages_per_page
         messages = Message.objects.order_by('-created_at')
-        messages_page = messages[start_pager:end_pager]
+        messages_page = messages[:end_pager]
         # Render HTML and send to client
         total_pages = math.ceil(messages.count() / self.max_messages_per_page)
         async_to_sync(self.channel_layer.group_send)(

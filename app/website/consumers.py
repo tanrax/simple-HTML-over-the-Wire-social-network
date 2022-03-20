@@ -55,8 +55,12 @@ class SocialNetworkConsumer(JsonWebsocketConsumer):
                 # Send messages to all clients
                 self.send_list_messages()
             case 'open edit page':
+                # If the user is editing a message, it is removed from the Broadcast group to prevent the form from being deleted if a new message appears.
+                async_to_sync(self.channel_layer.group_discard)(self.room_name, self.channel_name)
                 self.open_edit_page(data['id'])
             case 'update message':
+                # Assign the Broadcast group after finishing the edition
+                async_to_sync(self.channel_layer.group_add)(self.room_name, self.channel_name)
                 # Update message in database
                 Message.objects.filter(id=data['id']).update(
                     author=data['author'],

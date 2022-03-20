@@ -66,9 +66,3 @@ services:
       - ./caddy_data:/data
     depends_on:
       - django
-
-  mailhog:
-    image: mailhog/mailhog:latest
-    expose:
-      - 1025
-      - 8025

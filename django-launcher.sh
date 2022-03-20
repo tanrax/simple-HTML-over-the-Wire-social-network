@@ -1,10 +1,9 @@
 #!/bin/sh
-
-PG_READY=(pg_isready -d $DB_NAME -h $DB_HOST -p $DB_PORT -U $DB_PORT)
+PG_READY="pg_isready -h $DB_HOST"
 
 echo "Waiting for database to start..."
-
 until [ $PG_READY -eq "0" ]; do
+  echo "Ready database!"
   # Collect static files
   python3 manage.py collectstatic --noinput
 

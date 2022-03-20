@@ -7,6 +7,10 @@ ENV PYTHONUNBUFFERED: 1
 # Set work directory
 WORKDIR /usr/src/app
 
+# Add pg_isready command
+RUN apt update
+RUN apt install -y postgresql-client
+
 # Add Python dependencies
 ## Update pip
 RUN  pip install --upgrade pip
